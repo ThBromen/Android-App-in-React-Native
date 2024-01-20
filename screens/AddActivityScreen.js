@@ -13,11 +13,9 @@ const AddActivityScreen = ({ navigation }) => {
 
     const handleAddActivity = async () => {
         try {
-            const response = await axios.post('https://android-api-7sy3.onrender.com/api/v1/Activity/addActivity', {
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
+            const response = await axios.post(
+                'https://android-api-7sy3.onrender.com/api/v1/Activity/recordActivity',
+                {
                     date,
                     earTag,
                     activityType,
@@ -25,17 +23,21 @@ const AddActivityScreen = ({ navigation }) => {
                     howItWent,
                     dosageInml,
                     description,
-                }),
-            });
-
+                },
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                }
+            );
 
             console.log('Activity added successfully');
-
             navigation.goBack();
         } catch (error) {
             console.error('Error adding activity:', error.message);
         }
     };
+
 
     return (
         <View style={styles.container}>

@@ -57,12 +57,10 @@ export default function BottomTabNavigator() {
   );
 }
 
-// Custom TabBarIcon component
 function TabBarIcon({ name, color }) {
   return <Ionicons size={30} style={{ marginBottom: -3 }} name={name} color={color} />;
 }
 
-// Create a stack navigator for TabOneScreen
 const TabOneStack = createStackNavigator();
 function TabOneNavigator() {
   return (
@@ -76,7 +74,6 @@ function TabOneNavigator() {
   );
 }
 
-// Create a stack navigator for TabTwoScreen
 const TabTwoStack = createStackNavigator();
 function TabTwoNavigator() {
   return (
@@ -90,7 +87,6 @@ function TabTwoNavigator() {
   );
 }
 
-// Create a stack navigator for LoginScreen
 const TabThreeStack = createStackNavigator();
 function TabThreeNavigator() {
   return (

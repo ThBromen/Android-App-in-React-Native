@@ -43,7 +43,7 @@ export default function TabOneScreen() {
           Register
         </Icon.Button>
 
-        <Text>NOW</Text>
+
       </View>
 
       {/* Footer */}
@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
   image: {
     width: '100%',
     height: 200,
-    resizeMode: 'cover', // or 'contain' based on your image dimensions
+    resizeMode: 'cover',
   },
   buttonsContainer: {
     width: '100%',

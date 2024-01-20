@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
@@ -12,71 +12,68 @@ import CattleScreen from './CowCattleScreen';
 const Tab = createBottomTabNavigator();
 
 const DashboardScreen = ({ navigation }) => {
+    const handleTabPress = useCallback((routeName) => {
+        switch (routeName) {
+            case 'Activity':
+                navigation.navigate('ActivityScreen');
+                break;
+            case 'Cattle':
+                navigation.navigate('CattleScreen');
+                break;
+            case 'Financial':
+                navigation.navigate('FinancialScreen');
+                break;
+            case 'Pasture':
+                navigation.navigate('PastureScreen');
+                break;
+            case 'Logout':
+                navigation.navigate('LogoutScreen');
+                break;
+            case 'Worker':
+                navigation.navigate('WorkerScreen');
+                break;
+            default:
+                break;
+        }
+    }, [navigation]);
+
+    const getTabBarIcon = (routeName, focused, color, size) => {
+        const iconMapping = {
+            'Activity': 'play-circle',
+            'Cattle': 'paw',
+            'Financial': 'cash',
+            'Pasture': 'leaf',
+            'Logout': 'exit',
+            'Worker': 'people',
+        };
+    
+        const iconName = iconMapping[routeName] || 'information-circle';
+    
+        return (
+            <TouchableOpacity
+                style={styles.tabButton}
+                onPress={() => handleTabPress(routeName)}
+            >
+                <Ionicons name={iconName} size={size} color={color} />
+            </TouchableOpacity>
+        );
+    };
+
     return (
         <View style={styles.container}>
             <Tab.Navigator
                 screenOptions={({ route }) => ({
-                    tabBarIcon: ({ focused, color, size }) => {
-                        let iconName;
-
-                        switch (route.name) {
-                            case 'Activity':
-                                iconName = focused ? 'ios-play-circle' : 'ios-play-circle-outline';
-                                break;
-                            case 'Cattle':
-                                iconName = focused ? 'ios-paw' : 'ios-paw-outline';
-                                break;
-                            case 'Financial':
-                                iconName = focused ? 'ios-cash' : 'ios-cash-outline';
-                                break;
-                            case 'Pasture':
-                                iconName = focused ? 'ios-leaf' : 'ios-leaf-outline';
-                                break;
-                            case 'Logout':
-                                iconName = focused ? 'ios-exit' : 'ios-exit-outline';
-                                break;
-                            case 'Worker':
-                                iconName = focused ? 'ios-people' : 'ios-people-outline';
-                                break;
-                            default:
-                                iconName = 'ios-information-circle';
-                        }
-
-                        return (
-                            <TouchableOpacity
-                                style={styles.tabButton}
-                                onPress={() => {
-                                    if (route.name === 'Activity') {
-                                        navigation.navigate('ActivityScreen');
-                                    } else if (route.name === 'Logout') {
-                                        navigation.navigate('LogoutScreen');
-                                    } else if (route.name === 'Cattle') {
-                                        navigation.navigate('CattleScreen');
-                                    } else if (route.name === 'Financial') {
-                                        navigation.navigate('FinancialScreen');
-                                    } else if (route.name === 'Pasture') {
-                                        navigation.navigate('PastureScreen');
-                                    } else if (route.name === 'Worker') {
-                                        navigation.navigate('WorkerScreen');
-                                    }
-                                }}
-                            >
-                                <Ionicons name={iconName} size={size} color={color} />
-                            </TouchableOpacity>
-                        );
-                    },
+                    tabBarIcon: ({ focused, color, size }) =>
+                        getTabBarIcon(route.name, focused, color, size),
                 })}
                 tabBarOptions={{
                     activeTintColor: 'tomato',
                     inactiveTintColor: 'gray',
-                    style: [{
+                    style: {
                         display: 'flex',
                     },
-                        null]
                 }}
             >
-                {/* Define your Tab screens here */}
-
                 <Tab.Screen name="Activity" component={ActivityScreen} />
                 <Tab.Screen name="Cattle" component={CattleScreen} />
                 <Tab.Screen name="Financial" component={FinancialScreen} />
