@@ -1,6 +1,14 @@
 import axios from "axios";
 import React, { useState } from "react";
-import { View, Text, TextInput, Button, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  Button,
+  StyleSheet,
+  ActivityIndicator,
+  Alert,
+} from "react-native";
 
 const AddWorkerScreen = ({ navigation }) => {
   const [date, setDate] = useState("");
@@ -8,9 +16,11 @@ const AddWorkerScreen = ({ navigation }) => {
   const [fullNames, setFullNames] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [location, setLocation] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleAddActivity = async () => {
+  const handleAddWorker = async () => {
     try {
+      setLoading(true);
       const response = await axios.post(
         "https://android-api-7sy3.onrender.com/api/v1/Activity/recordActivity",
         {
@@ -30,19 +40,19 @@ const AddWorkerScreen = ({ navigation }) => {
       console.log("Worker added successfully");
       navigation.goBack();
     } catch (error) {
-      console.error("Error adding Worker:", error.message);
+      console.error(
+        "Error adding Worker:",
+        error.response.data || error.message
+      );
+      Alert.alert("Error", "Failed to add worker. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <View style={styles.container}>
       <Text>Add your Worker here!</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Date"
-        value={date}
-        onChangeText={(text) => setDate(text)}
-      />
       <TextInput
         style={styles.input}
         placeholder="Date"
@@ -74,7 +84,9 @@ const AddWorkerScreen = ({ navigation }) => {
         onChangeText={(text) => setLocation(text)}
       />
 
-      <Button title="Add worker" onPress={handleAddActivity} />
+      {loading && <ActivityIndicator size="large" color="#0000ff" />}
+
+      <Button title="Add Worker" onPress={handleAddWorker} disabled={loading} />
     </View>
   );
 };

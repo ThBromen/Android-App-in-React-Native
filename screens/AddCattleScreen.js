@@ -1,6 +1,13 @@
 import axios from "axios";
-import React, { useState } from "react";
-import { View, Text, TextInput, Button, StyleSheet } from "react-native";
+import React, { useState, useRef } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  Button,
+  StyleSheet,
+  ActivityIndicator,
+} from "react-native";
 
 const AddCattleScreen = ({ navigation }) => {
   const [earTag, setEarTag] = useState("");
@@ -12,11 +19,22 @@ const AddCattleScreen = ({ navigation }) => {
   const [numberOfCalving, setNumberOfCalving] = useState("");
   const [litresOfMilkItProduces, setLitresOfMilkItProduces] = useState("");
   const [inseminationPeriod, setInseminationPeriod] = useState("");
+  const [loading, setLoading] = useState(false);
+  const isLoading = useRef(false);
 
   const handleAddActivity = async () => {
     try {
+      if (isLoading.current) {
+        // Avoid making multiple requests while one is already in progress
+        return;
+      }
+
+      // Set loading to true to show the indicator
+      setLoading(true);
+      isLoading.current = true;
+
       const response = await axios.post(
-        "https://android-api-7sy3.onrender.com/api/v1/createCow/recordCow",
+        "https://android-api-7sy3.onrender.com/api/v1/createCow/recordHeifers",
         {
           earTag,
           categoryType,
@@ -39,6 +57,10 @@ const AddCattleScreen = ({ navigation }) => {
       navigation.goBack();
     } catch (error) {
       console.error("Error adding Cow:", error.message);
+    } finally {
+      // Set loading to false to hide the indicator
+      setLoading(false);
+      isLoading.current = false;
     }
   };
 
@@ -99,6 +121,8 @@ const AddCattleScreen = ({ navigation }) => {
         value={inseminationPeriod}
         onChangeText={(text) => setInseminationPeriod(text)}
       />
+
+      {loading && <ActivityIndicator size="large" color="#0000ff" />}
 
       <Button title="Add Cow" onPress={handleAddActivity} />
     </View>

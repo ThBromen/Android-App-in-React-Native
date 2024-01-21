@@ -1,17 +1,26 @@
 import axios from "axios";
 import React, { useState } from "react";
-import { View, Text, TextInput, Button, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  Button,
+  StyleSheet,
+  ActivityIndicator,
+} from "react-native";
 
 const AddPastureScreen = ({ navigation }) => {
   const [pastureName, setPastureName] = useState("");
   const [owner, setOwner] = useState("");
   const [area, setArea] = useState("");
   const [numberOfCattles, setNumberOfCattles] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleAddPasture = async () => {
     try {
+      setLoading(true);
       const response = await axios.post(
-        "https://android-api-7sy3.onrender.com/api/v1/Pasture/recordPasture",
+        "https://android-api-7sy3.onrender.com/api/v1/pasture/addPasture",
         {
           pastureName,
           owner,
@@ -29,6 +38,8 @@ const AddPastureScreen = ({ navigation }) => {
       navigation.goBack();
     } catch (error) {
       console.error("Error adding pasture:", error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -59,7 +70,10 @@ const AddPastureScreen = ({ navigation }) => {
         value={numberOfCattles}
         onChangeText={(text) => setNumberOfCattles(text)}
       />
-      <Button title="Add Pasture" onPress={handleAddPasture} />
+      <View style={styles.buttonContainer}>
+        <Button title="Add Pasture" onPress={handleAddPasture} />
+        {loading && <ActivityIndicator style={styles.loader} />}
+      </View>
     </View>
   );
 };
@@ -77,6 +91,14 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginBottom: 20,
     paddingLeft: 10,
+  },
+  buttonContainer: {
+    marginTop: 20,
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  loader: {
+    marginLeft: 10,
   },
 });
 

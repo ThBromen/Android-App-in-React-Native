@@ -1,6 +1,13 @@
 import axios from "axios";
 import React, { useState } from "react";
-import { View, Text, TextInput, Button, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  Button,
+  StyleSheet,
+  ActivityIndicator,
+} from "react-native";
 
 const AddFinancialScreen = ({ navigation }) => {
   const [animalEarTag, setAnimalEarTag] = useState("");
@@ -12,9 +19,13 @@ const AddFinancialScreen = ({ navigation }) => {
   const [paymentDate, setPaymentDate] = useState("");
   const [amount, setAmount] = useState("");
   const [administrator, setAdministrator] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleAddActivity = async () => {
     try {
+      // Set loading to true to show the indicator
+      setLoading(true);
+
       const response = await axios.post(
         "https://android-api-7sy3.onrender.com/api/v1/financial/addFinancial",
         {
@@ -39,6 +50,9 @@ const AddFinancialScreen = ({ navigation }) => {
       navigation.goBack();
     } catch (error) {
       console.error("Error adding Financial:", error.message);
+    } finally {
+      // Set loading to false to hide the indicator
+      setLoading(false);
     }
   };
 
@@ -99,6 +113,9 @@ const AddFinancialScreen = ({ navigation }) => {
         value={administrator}
         onChangeText={(text) => setAdministrator(text)}
       />
+
+      {loading && <ActivityIndicator size="large" color="#0000ff" />}
+
       <Button title="Add Financial" onPress={handleAddActivity} />
     </View>
   );

@@ -12,16 +12,19 @@ const LogoutScreen = ({ route, navigation }) => {
 
   const fetchUserData = async () => {
     try {
-      const id = route.params._id;
-      const response = await axios.get(
-        `https://smart-farming-api.onrender.com/api/v1/user/userbyid/${id}`
-      );
-      const data = await response.json();
+      if (route && route.params && route.params._id) {
+        const id = route.params._id;
+        const response = await axios.get(
+          `https://smart-farming-api.onrender.com/api/v1/user/userbyid/${id}`
+        );
 
-      if (response.ok) {
-        setUserData(data);
+        if (response.ok) {
+          setUserData(response.data);
+        } else {
+          console.error("Failed to fetch user data:", response.data);
+        }
       } else {
-        console.error("Failed to fetch user data:", data);
+        console.error("Invalid or missing user ID in route params");
       }
     } catch (error) {
       console.error("Error fetching user data:", error.message);
@@ -30,23 +33,27 @@ const LogoutScreen = ({ route, navigation }) => {
 
   const handleDeleteAccount = async () => {
     try {
-      const id = route.params.userId;
-      const response = await fetch(
-        `https://smart-farming-api.onrender.com/api/v1/user/deleteuser/${id}`,
-        {
-          method: "DELETE",
-        }
-      );
-
-      if (response.ok) {
-        Alert.alert(
-          "Account Deleted",
-          "Your account has been successfully deleted."
+      if (route && route.params && route.params._id) {
+        const id = route.params._id;
+        const response = await fetch(
+          `https://smart-farming-api.onrender.com/api/v1/user/deleteuser/${id}`,
+          {
+            method: "DELETE",
+          }
         );
-        navigation.navigate("Home");
+
+        if (response.ok) {
+          Alert.alert(
+            "Account Deleted",
+            "Your account has been successfully deleted."
+          );
+          navigation.navigate("Home");
+        } else {
+          const errorData = await response.json();
+          console.error("Failed to delete account:", errorData);
+        }
       } else {
-        const errorData = await response.json();
-        console.error("Failed to delete account:", errorData);
+        console.error("Invalid or missing user ID in route params");
       }
     } catch (error) {
       console.error("Error deleting account:", error.message);
@@ -57,21 +64,23 @@ const LogoutScreen = ({ route, navigation }) => {
     try {
       await AsyncStorage.removeItem("authToken");
       await AsyncStorage.removeItem("user");
+      await AsyncStorage.clear();
       navigation.navigate("Home");
     } catch (error) {
       console.error("Error clearing AsyncStorage:", error.message);
     }
   };
+
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Hello, {userData?.name}</Text>
       {userData ? (
         <View>
-          {Object.entries(userData).map(([key, value]) => (
-            <Text style={styles.text} key={key}>
-              {key}: {value}
-            </Text>
-          ))}
+          <Text style={styles.text}>Date: {userData.date}</Text>
+          <Text style={styles.text}>Email: {userData.email}</Text>
+          <Text style={styles.text}>Full Names: {userData.fullNames}</Text>
+          <Text style={styles.text}>Phone Number: {userData.phoneNumber}</Text>
+          <Text style={styles.text}>Location: {userData.location}</Text>
+
           <Button
             title="Delete Account"
             onPress={handleDeleteAccount}
