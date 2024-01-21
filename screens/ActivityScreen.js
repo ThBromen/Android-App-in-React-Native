@@ -126,8 +126,8 @@ const ActivityScreen = ({ navigation }) => {
         }
       );
       console.log(response.data);
-      setEditVisible(false)
-      fetchActivities()
+      setEditVisible(false);
+      fetchActivities();
     } catch (error) {
       console.log(error.response.data);
       console.error("Error fetching activity details:", error.message);
@@ -187,8 +187,8 @@ const ActivityScreen = ({ navigation }) => {
                 <Button
                   title="Edit"
                   onPress={() => {
-                      setSelectedData(item);
-                      console.log(item);
+                    setSelectedData(item);
+                    console.log(item);
                     setEditVisible(true);
                   }}
                 />
@@ -232,64 +232,49 @@ const ActivityScreen = ({ navigation }) => {
           placeholder="Date"
           value={Date || selectedData?.Date}
           onChangeText={(text) => setDate(text)}
-          defaultValue={
-            selectedData?.Date
-       }
+          defaultValue={selectedData?.Date}
         />
         <TextInput
           style={styles.input}
           placeholder="Ear Tag"
           value={earTag || selectedData?.earTag}
           onChangeText={(text) => setEarTag(text)}
-          defaultValue={
-            selectedData?.earTag
-       }
+          defaultValue={selectedData?.earTag}
         />
         <TextInput
           style={styles.input}
           placeholder="Activity Type"
           value={activityType || selectedData?.activityType}
           onChangeText={(text) => setActivityType(text)}
-          defaultValue={
-            selectedData?.notes
-       }
+          defaultValue={selectedData?.notes}
         />
         <TextInput
           style={styles.input}
           value={notes || selectedData?.notes}
           placeholder="Notes"
           onChangeText={(text) => setNotes(text)}
-          defaultValue={
-            selectedData?.notes
-       }
+          defaultValue={selectedData?.notes}
         />
         <TextInput
           style={styles.input}
           placeholder="How It Went"
           value={howItWent || selectedData?.howItWent}
           onChangeText={(text) => setHowItWent(text)}
-          defaultValue={
-            selectedData?.howItWent
-       }
-
+          defaultValue={selectedData?.howItWent}
         />
         <TextInput
           style={styles.input}
           placeholder="Dosage (in ml)"
           value={dosageInml || selectedData?.dosageInml}
           onChangeText={(text) => setDosageInml(text)}
-          defaultValue={
-            selectedData?.dosageInml
-       }
+          defaultValue={selectedData?.dosageInml}
         />
         <TextInput
           style={styles.input}
           placeholder="Description"
           value={description || selectedData?.description}
           onChangeText={(text) => setDescription(text)}
-          defaultValue={
-               selectedData?.description
-          }
+          defaultValue={selectedData?.description}
         />
         <Button
           title="update"

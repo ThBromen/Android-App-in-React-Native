@@ -14,12 +14,12 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 
-const CattleScreen = ({ navigation }) => {
-  const [cows, setActivities] = useState([]);
+const ActivityScreen = ({ navigation }) => {
+  const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const fetchCow = async () => {
+  const fetchActivities = async () => {
     try {
       const authToken = await AsyncStorage.getItem("authToken");
       const response = await axios.get(
@@ -46,7 +46,7 @@ const CattleScreen = ({ navigation }) => {
       () => {
         setLoading(true);
         setError(null);
-        fetchCow();
+        fetchActivities();
       },
       [navigation]
     );
@@ -54,11 +54,12 @@ const CattleScreen = ({ navigation }) => {
     return unsubscribe;
   }, [navigation]);
 
-  const handleAddCow = () => {
-    navigation.navigate("AddActivity");
+  const handleAddActivity = () => {
+    navigation.navigate("AddCattle");
   };
-  const handleDeleteCow = async (id) => {
-    Alert.alert("Are your sure?", "Are you sure you want to delete activity", [
+
+  const handleDeleteActivity = async (id) => {
+    Alert.alert("Are your sure?", "Are you sure you want to delete Cow", [
       {
         text: "Yes",
         onPress: async () => {
@@ -67,14 +68,12 @@ const CattleScreen = ({ navigation }) => {
               `https://android-api-7sy3.onrender.com/api/v1/createCow/deleteCow/${id}`
             );
             console.log(response.data);
-            fetchCow();
+            fetchActivities();
           } catch (error) {
-            console.error("Error deleting activity:", error.message);
+            console.error("Error deleting Cow:", error.message);
           }
         },
       },
-      // The "No" button
-      // Does nothing but dismiss the dialog when tapped
       {
         text: "No",
       },
@@ -84,7 +83,8 @@ const CattleScreen = ({ navigation }) => {
   const [editVisible, setEditVisible] = useState(false);
   const [viewVisible, setViewVisible] = useState(false);
   const [selectedData, setSelectedData] = useState(null);
-  const [earTag, setEarTag] = useState("");
+  const [date, setDate] = useState(selectedData?.Date || "");
+  const [earTag, setEarTag] = useState(selectedData?.earTag || "");
   const [categoryType, setCategoryType] = useState("");
   const [breedType, setBreedType] = useState("");
   const [status, setStatus] = useState("");
@@ -94,11 +94,25 @@ const CattleScreen = ({ navigation }) => {
   const [litresOfMilkItProduces, setLitresOfMilkItProduces] = useState("");
   const [inseminationPeriod, setInseminationPeriod] = useState("");
 
-  const handleEditCow = async () => {
+  const [editData, setEditData] = useState({
+    Date: "",
+    earTag: "",
+    categoryType: "",
+    breedType: "",
+    status: "",
+    calfNumber: "",
+    lactating: "",
+    numberOfCalving: "",
+    litresOfMilkItProduces: "",
+    inseminationPeriod: "",
+  });
+
+  const handleEditActivity = async (id) => {
     try {
       const response = await axios.put(
-        `https://android-api-7sy3.onrender.com/api/v1/createCow/updateCow/${selectedData.earTag}`,
+        `https://android-api-7sy3.onrender.com/api/v1/createCow/updateCow/${earTag}`,
         {
+          Date,
           earTag,
           categoryType,
           breedType,
@@ -111,11 +125,11 @@ const CattleScreen = ({ navigation }) => {
         }
       );
       console.log(response.data);
-      fetchCow();
       setEditVisible(false);
+      fetchActivities();
     } catch (error) {
       console.log(error.response.data);
-      console.error("Error updating Cow:", error.message);
+      console.error("Error fetching Cow details:", error.message);
     }
   };
 
@@ -128,6 +142,7 @@ const CattleScreen = ({ navigation }) => {
         }}
       >
         <Text>{name}</Text>
+
         <Text>{value}</Text>
       </View>
     );
@@ -136,38 +151,29 @@ const CattleScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <Text>List of all Cows</Text>
-      <Button title="Add Cow" onPress={handleAddCow} />
+      <Button title="Add Cow" onPress={handleAddActivity} />
       {loading ? (
         <ActivityIndicator size="large" color="#0000ff" />
       ) : error ? (
         <Text>Error: {error}</Text>
       ) : (
         <FlatList
-          data={cows}
-          keyExtractor={(item) => item.earTag}
+          data={activities}
+          keyExtractor={(item) => item._id}
           renderItem={({ item }) => (
             <View style={styles.activityContainer}>
-              <View>
-                <ItemCard name="Ear Tag" value={item.earTag} />
-                <ItemCard name="Category Type" value={item.categoryType} />
-                <ItemCard name="Breed Type" value={item.breedType} />
-                <ItemCard name="Status" value={item.status} />
-                <ItemCard name="Calf Number" value={item.calfNumber} />
-                <ItemCard name="Lactating" value={item.lactating} />
-                <ItemCard
-                  name="Number of Calving"
-                  value={item.numberOfCalving}
-                />
-                <ItemCard
-                  name="Litres of Milk"
-                  value={item.litresOfMilkItProduces}
-                />
-                <ItemCard
-                  name="Insemination Period"
-                  value={item.inseminationPeriod}
-                />
+              <View style={styles.columnContainer}>
+                <Text>{item.Date}</Text>
+                <Text>{item.earTag}</Text>
+                <Text>{item.categoryType}</Text>
+                <Text>{item.breedType}</Text>
+                <Text>{item.status}</Text>
+                <Text>{item.calfNumber}</Text>
+                <Text>{item.lactating}</Text>
+                <Text>{item.numberOfCalving}</Text>
+                <Text>{item.litresOfMilkItProduces}</Text>
+                <Text>{item.inseminationPeriod}</Text>
               </View>
-
               <View
                 style={{
                   gap: 10,
@@ -180,88 +186,17 @@ const CattleScreen = ({ navigation }) => {
                     setSelectedData(item);
                   }}
                 />
-
-                <Modal
-                  animationType="slide"
-                  visible={viewVisible}
-                  style={{
-                    height: "80%",
-                  }}
-                >
-                  <TouchableOpacity
-                    style={{
-                      backgroundColor: "red",
-                      padding: 10,
-                      justifyContent: "center",
-                      alignItems: "center",
-                    }}
-                    onPress={() => {
-                      setViewVisible(true);
-                    }}
-                  >
-                    <Text>Close</Text>
-                  </TouchableOpacity>
-                  <Text>View one Cow </Text>
-                  <View
-                    style={{
-                      gap: 10,
-                      padding: 20,
-                    }}
-                  >
-                    <ItemCard name={"Ear tag"} value={selectedData?.earTag} />
-                    <ItemCard name={"Date"} value={selectedData?.Date} />
-                    <ItemCard
-                      name={"categoryType"}
-                      value={selectedData?.categoryType}
-                    />
-                    <ItemCard
-                      name={"breedType"}
-                      value={selectedData?.breedType}
-                    />
-                    <ItemCard name={"status"} value={selectedData?.status} />
-                    <ItemCard
-                      name={"calfNumber"}
-                      value={selectedData?.calfNumber}
-                    />
-                    <ItemCard
-                      name={"lactating"}
-                      value={selectedData?.lactating}
-                    />
-                    <ItemCard
-                      name={"numberOfCalving"}
-                      value={selectedData?.numberOfCalving}
-                    />
-                    <ItemCard
-                      name={"litresOfMilkItProduces"}
-                      value={selectedData?.litresOfMilkItProduces}
-                    />
-                    <ItemCard
-                      name={"inseminationPeriod"}
-                      value={selectedData?.inseminationPeriod}
-                    />
-                  </View>
-                </Modal>
-
                 <Button
                   title="Edit"
                   onPress={() => {
-                    setEditVisible(true);
                     setSelectedData(item);
-                    setEarTag(item.Date);
-                    setEarTag(item.earTag);
-                    setCategoryType(item.categoryType);
-                    setBreedType(item.breedType);
-                    setStatus(item.status);
-                    setCalfNumber(item.calfNumber);
-                    setLactating(item.lactating);
-                    setNumberOfCalving(item.numberOfCalving);
-                    setLitresOfMilkItProduces(item.litresOfMilkItProduces);
-                    setInseminationPeriod(item.inseminationPeriod);
+                    console.log(item);
+                    setEditVisible(true);
                   }}
                 />
                 <Button
                   title="Delete"
-                  onPress={() => handleDeleteCow(item._id)}
+                  onPress={() => handleDeleteActivity(item._id)}
                 />
               </View>
             </View>
@@ -287,55 +222,135 @@ const CattleScreen = ({ navigation }) => {
             alignItems: "center",
           }}
           onPress={() => {
-            setEditVisible(true);
+            setEditVisible(false);
           }}
         >
-          n<Text>Close</Text>
+          <Text>Close</Text>
         </TouchableOpacity>
         <Text>Edit One Cow </Text>
 
         <TextInput
           style={styles.input}
           placeholder="Date"
-          value={selectedData?.Date}
+          value={date || selectedData?.Date}
           onChangeText={(text) => setDate(text)}
+          defaultValue={selectedData?.date}
         />
         <TextInput
           style={styles.input}
           placeholder="Ear Tag"
-          value={selectedData?.earTag}
+          value={earTag || selectedData?.earTag}
           onChangeText={(text) => setEarTag(text)}
+          defaultValue={selectedData?.earTag}
         />
         <TextInput
           style={styles.input}
-          placeholder="Activity Type"
-          value={selectedData?.activityType}
-          onChangeText={(text) => setActivityType(text)}
+          placeholder="Category Type"
+          value={categoryType || selectedData?.categoryType}
+          onChangeText={(text) => setCategoryType(text)}
+          defaultValue={selectedData?.categoryType}
         />
         <TextInput
           style={styles.input}
-          placeholder="Notes"
-          value={selectedData?.notes}
-          onChangeText={(text) => setNotes(text)}
+          placeholder="Breed Type"
+          value={breedType || selectedData?.breedType}
+          onChangeText={(text) => setBreedType(text)}
+          defaultValue={selectedData?.breedType}
         />
         <TextInput
           style={styles.input}
-          placeholder="How It Went"
-          value={selectedData?.howItWent}
-          onChangeText={(text) => setHowItWent(text)}
+          placeholder="Status"
+          value={status || selectedData?.status}
+          onChangeText={(text) => setStatus(text)}
+          defaultValue={selectedData?.status}
         />
         <TextInput
           style={styles.input}
-          placeholder="Dosage (in ml)"
-          value={selectedData?.dosageInml}
-          onChangeText={(text) => setDosageInml(text)}
+          placeholder="Calf Number"
+          value={calfNumber || selectedData?.calfNumber}
+          onChangeText={(text) => setCalfNumber(text)}
+          defaultValue={selectedData?.calfNumber}
         />
         <TextInput
           style={styles.input}
-          placeholder="Description"
-          value={selectedData?.description}
-          onChangeText={(text) => setDescription(text)}
+          placeholder="Lactating"
+          value={lactating || selectedData?.lactating}
+          onChangeText={(text) => setLactating(text)}
+          defaultValue={selectedData?.lactating}
         />
+        <TextInput
+          style={styles.input}
+          placeholder="Number of Calving"
+          value={numberOfCalving || selectedData?.numberOfCalving}
+          onChangeText={(text) => setNumberOfCalving(text)}
+          defaultValue={selectedData?.numberOfCalving}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Litres of Milk It Produces"
+          value={litresOfMilkItProduces || selectedData?.litresOfMilkItProduces}
+          onChangeText={(text) => setLitresOfMilkItProduces(text)}
+          defaultValue={selectedData?.litresOfMilkItProduces}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Insemination Period"
+          value={inseminationPeriod || selectedData?.inseminationPeriod}
+          onChangeText={(text) => setInseminationPeriod(text)}
+          defaultValue={selectedData?.inseminationPeriod}
+        />
+        <Button
+          title="update"
+          onPress={() => handleEditActivity(selectedData._id)}
+        />
+      </Modal>
+      <Modal
+        animationType="slide"
+        visible={viewVisible}
+        style={{
+          height: "80%",
+        }}
+      >
+        <TouchableOpacity
+          style={{
+            backgroundColor: "red",
+            padding: 10,
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+          onPress={() => {
+            setViewVisible(false);
+          }}
+        >
+          <Text>Close</Text>
+        </TouchableOpacity>
+        <Text>View one Cow </Text>
+        <View
+          style={{
+            gap: 10,
+            padding: 20,
+          }}
+        >
+          <ItemCard name={"Ear Tag"} value={selectedData?.earTag} />
+          <ItemCard name={"Date"} value={selectedData?.Date} />
+          <ItemCard name={"Category Type"} value={selectedData?.categoryType} />
+          <ItemCard name={"Breed Type"} value={selectedData?.breedType} />
+          <ItemCard name={"Status"} value={selectedData?.status} />
+          <ItemCard name={"Calf Number"} value={selectedData?.calfNumber} />
+          <ItemCard name={"Lactating"} value={selectedData?.lactating} />
+          <ItemCard
+            name={"Number of Calving"}
+            value={selectedData?.numberOfCalving}
+          />
+          <ItemCard
+            name={"Litres of Milk It Produces"}
+            value={selectedData?.litresOfMilkItProduces}
+          />
+          <ItemCard
+            name={"Insemination Period"}
+            value={selectedData?.inseminationPeriod}
+          />
+        </View>
       </Modal>
     </View>
   );
@@ -348,7 +363,7 @@ const styles = StyleSheet.create({
   },
   activityContainer: {
     margin: 20,
-    width: "80 %",
+    width: "90 %",
     marginBottom: 20,
     padding: 10,
     borderWidth: 1,
@@ -366,5 +381,4 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
   },
 });
-
-export default CattleScreen;
+export default ActivityScreen;
