@@ -230,9 +230,9 @@ const ActivityScreen = ({ navigation }) => {
         <TextInput
           style={styles.input}
           placeholder="Date"
-          value={Date || selectedData?.Date}
+          value={date || selectedData?.date}
           onChangeText={(text) => setDate(text)}
-          defaultValue={selectedData?.Date}
+          defaultValue={selectedData?.date}
         />
         <TextInput
           style={styles.input}
@@ -246,12 +246,12 @@ const ActivityScreen = ({ navigation }) => {
           placeholder="Activity Type"
           value={activityType || selectedData?.activityType}
           onChangeText={(text) => setActivityType(text)}
-          defaultValue={selectedData?.notes}
+          defaultValue={selectedData?.activityType}
         />
         <TextInput
           style={styles.input}
-          value={notes || selectedData?.notes}
           placeholder="Notes"
+          value={notes || selectedData?.notes}
           onChangeText={(text) => setNotes(text)}
           defaultValue={selectedData?.notes}
         />
@@ -276,6 +276,7 @@ const ActivityScreen = ({ navigation }) => {
           onChangeText={(text) => setDescription(text)}
           defaultValue={selectedData?.description}
         />
+
         <Button
           title="update"
           onPress={() => handleEditActivity(selectedData._id)}

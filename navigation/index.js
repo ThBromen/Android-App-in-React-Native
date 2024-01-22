@@ -17,6 +17,8 @@ import AddPastureScreen from "../screens/AddPastureScreen";
 import AddWorkerScreen from "../screens/AddWorkerScreen";
 import LinkingConfiguration from "./LinkingConfiguration";
 import { getData } from "../.expo/storage/storage";
+import LogoutScreen from "../screens/LogoutScreen";
+import TabOneScreen from "../screens/TabOneScreen";
 
 export default function Navigation({ colorScheme }) {
   return (
@@ -45,18 +47,14 @@ function RootNavigator() {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       {user ? (
         <>
-          <Stack.Screen name="Dashboard" component={DashboardScreen} />
-          <Stack.Screen name="AddActivity" component={AddActivityScreen} />
-          <Stack.Screen name="AddCattle" component={AddCattleScreen} />
-          <Stack.Screen name="AddFinancial" component={AddFinancialScreen} />
-          <Stack.Screen name="AddPasture" component={AddPastureScreen} />
-          <Stack.Screen name="AddWorker" component={AddWorkerScreen} />
+          <Stack.Screen name="Authenticated" component={AuthenticatedStack} />
         </>
       ) : (
         <>
-          <Stack.Screen name="Root" component={BottomTabNavigator} />
-          <Stack.Screen name="Login" component={LoginScreen} />
-          <Stack.Screen name="Register" component={RegisterScreen} />
+          <Stack.Screen
+            name="Unauthenticated"
+            component={UnauthenticatedStack}
+          />
         </>
       )}
       <Stack.Screen
@@ -67,3 +65,24 @@ function RootNavigator() {
     </Stack.Navigator>
   );
 }
+
+const AuthenticatedStack = () => (
+  <Stack.Navigator>
+    <Stack.Screen name="Dashboard" component={DashboardScreen} />
+    <Stack.Screen name="AddActivity" component={AddActivityScreen} />
+    <Stack.Screen name="AddCattle" component={AddCattleScreen} />
+    <Stack.Screen name="AddFinancial" component={AddFinancialScreen} />
+    <Stack.Screen name="AddPasture" component={AddPastureScreen} />
+    <Stack.Screen name="AddWorker" component={AddWorkerScreen} />
+    <Stack.Screen name="Logout" component={LogoutScreen} />
+  </Stack.Navigator>
+);
+
+const UnauthenticatedStack = () => (
+  <Stack.Navigator>
+    <Stack.Screen name="Bromen.com" component={BottomTabNavigator} />
+    <Stack.Screen name="Login" component={LoginScreen} />
+    <Stack.Screen name="Register" component={RegisterScreen} />
+    <Stack.Screen name="Dashboard" component={DashboardScreen} />
+  </Stack.Navigator>
+);

@@ -32,7 +32,7 @@ export default function BottomTabNavigator() {
         }}
       />
 
-      <BottomTab.Screen
+      {/* <BottomTab.Screen
         name="Setting"
         component={TabTwoNavigator}
         options={{
@@ -41,7 +41,7 @@ export default function BottomTabNavigator() {
             <TabBarIcon name="settings-outline" color={color} />
           ),
         }}
-      />
+      /> */}
 
       <BottomTab.Screen
         name="Login"
@@ -58,7 +58,14 @@ export default function BottomTabNavigator() {
 }
 
 function TabBarIcon({ name, color }) {
-  return <Ionicons size={30} style={{ marginBottom: -3 }} name={name} color={color} />;
+  return (
+    <Ionicons
+      size={30}
+      style={{ marginBottom: -3 }}
+      name={name}
+      color={color}
+    />
+  );
 }
 
 const TabOneStack = createStackNavigator();
